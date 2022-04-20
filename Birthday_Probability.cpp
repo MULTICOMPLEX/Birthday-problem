@@ -20,13 +20,14 @@ void Birthday_Probability()
   short int birthdays[Ndays] = {};
   int successfulTrials;
   bool sharedBirthday;
-  const int Npeople_with_same_birthday = 2;
+  const int Npeople_with_same_birthday = 4;
+  const int number_of_people = 200;
 
   mxws rng;
 
   auto begin = std::chrono::steady_clock::now();
 
-  for (int people = 2; people < 101; ++people) {
+  for (int people = Npeople_with_same_birthday; people <= number_of_people; ++people) { //101
 
     successfulTrials = 0;
     for (int i = 0; i < TRIALS; ++i) {
