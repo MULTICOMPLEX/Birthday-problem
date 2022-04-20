@@ -10,6 +10,7 @@ void Birthday_Probability();
 int main()
 {
   Birthday_Probability();
+  return 0;
 }
 
 void Birthday_Probability()
@@ -33,7 +34,7 @@ void Birthday_Probability()
       for (int j = 0; j < people; ++j) {
         // if the given birthday is shared (has more than one person)
         // then we have a shared birthday, stop checking
-        if (++birthdays[rng() % Ndays] > 1) {
+        if (++birthdays[rng(Ndays-1)] > 1) {
           sharedBirthday = true;
           break;
         }
@@ -48,5 +49,4 @@ void Birthday_Probability()
   auto end = std::chrono::steady_clock::now();
   std::cout << "\nTime difference = " <<
     std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
-  //11815[ms]
 }
