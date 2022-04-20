@@ -1,8 +1,8 @@
-
 #include "mxws.hpp"
 #include <iostream>
 #include <chrono>
 #include <numbers>
+#include <array>
 
 
 void Birthday_Probability();
@@ -17,26 +17,28 @@ void Birthday_Probability()
 {
   const int Ndays = 365;
   const int TRIALS = 1500000;
-  short int birthdays[Ndays] = {};
+  std::array <short int, Ndays> birthdays = {};
   int successfulTrials;
   bool sharedBirthday;
   const int Npeople_with_same_birthday = 2;
-  const int number_of_people = 100;
+  const int N_people = 100;
 
   mxws rng;
 
   auto begin = std::chrono::steady_clock::now();
 
-  for (int people = Npeople_with_same_birthday; people <= number_of_people; ++people) { //101
+  for (int people = Npeople_with_same_birthday; people <= N_people; ++people) { 
 
     successfulTrials = 0;
     for (int i = 0; i < TRIALS; ++i) {
-      for (int j = 0; j < Ndays; birthdays[j++] = 0); // set days all to 0
+
+      birthdays.fill(0); // set days all to 0
       sharedBirthday = false;
+      
       for (int j = 0; j < people; ++j) {
         // if the given birthday is shared (has more than one person)
         // then we have a shared birthday, stop checking
-        if (++birthdays[rng(Ndays-1)] > Npeople_with_same_birthday - 1) {
+        if (++birthdays[rng(Ndays - 1)] == Npeople_with_same_birthday) {
           sharedBirthday = true;
           break;
         }
@@ -44,7 +46,7 @@ void Birthday_Probability()
       if (sharedBirthday) ++successfulTrials;
     }
 
-    std::cout << "The chance that, in a set of " << std::setw(3) << std::left << people 
+    std::cout << "The chance that, in a set of " << std::setw(3) << std::left << people
       << " randomly chosen people, at least " << Npeople_with_same_birthday << " people"
       << " will share a birthday is " << std::setw(9) << std::setprecision(5) << std::fixed
       << 100 * (double(successfulTrials) / double(TRIALS)) << " %"
