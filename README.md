@@ -10,3 +10,7 @@ in a set of n randomly chosen people, at least two will share a birthday.
 A014088  Minimal number of people to give a 50% probability of having at least n coincident birthdays in one year.
 
 https://oeis.org/A014088
+
+
+Exact Solutions of the Generalized Birthday Problem 
+https://oeis.org/A014088/a014088.txt
