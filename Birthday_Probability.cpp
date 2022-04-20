@@ -20,8 +20,8 @@ void Birthday_Probability()
   short int birthdays[Ndays] = {};
   int successfulTrials;
   bool sharedBirthday;
-  const int Npeople_with_same_birthday = 4;
-  const int number_of_people = 200;
+  const int Npeople_with_same_birthday = 2;
+  const int number_of_people = 100;
 
   mxws rng;
 
