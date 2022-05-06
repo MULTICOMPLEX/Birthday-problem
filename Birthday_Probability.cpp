@@ -15,7 +15,7 @@ int main()
 
 void Birthday_Probability()
 {
-  int Ndays = 365;
+  int Ndays = 365; 
   int TRIALS = 1500000;
   std::vector<short int> birthdays(Ndays);
   int successfulTrials;
