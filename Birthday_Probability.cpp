@@ -15,24 +15,44 @@ int main()
 
 void Birthday_Probability()
 {
-  const int Ndays = 365;
-  const int TRIALS = 1500000;
-  std::array <short int, Ndays> birthdays = {};
+  int Ndays = 365;
+  int TRIALS = 1500000;
+  std::vector<short int> birthdays(Ndays);
   int successfulTrials;
   bool sharedBirthday;
-  const int Npeople_with_same_birthday = 2;
-  const int N_people = 100;
+  int Npeople_with_same_birthday = 2;
+  int N_people = 100;
 
   mxws rng;
 
+  bool def = 0;
+  
+  if (def) {
+    Ndays = 16;
+    TRIALS = 1500000;
+    Npeople_with_same_birthday = 6;
+    N_people = 40;
+    birthdays.resize(Ndays);
+  }
+
   auto begin = std::chrono::steady_clock::now();
+
+  std::cout << 
+    "Number of days " << Ndays << std::endl << 
+    "Number of Trials " << TRIALS << std::endl <<
+    "Number of people with the same birthday " << Npeople_with_same_birthday << std::endl << 
+    "Number of people " << N_people << std::endl << std::endl;
+
+  std::cout << "The chance that, in a set of N" 
+    << " randomly chosen people, at least " << Npeople_with_same_birthday << " people"
+    << " will share a birthday is " << std::endl;
 
   for (int people = Npeople_with_same_birthday; people <= N_people; ++people) { 
 
     successfulTrials = 0;
     for (int i = 0; i < TRIALS; ++i) {
 
-      birthdays.fill(0); // set days all to 0
+      std::fill(birthdays.begin(), birthdays.end(), 0);
       sharedBirthday = false;
       
       for (int j = 0; j < people; ++j) {
@@ -45,10 +65,10 @@ void Birthday_Probability()
       }
       if (sharedBirthday) ++successfulTrials;
     }
-
-    std::cout << "The chance that, in a set of " << std::setw(3) << std::left << people
-      << " randomly chosen people, at least " << Npeople_with_same_birthday << " people"
-      << " will share a birthday is " << std::setw(9) << std::setprecision(5) << std::fixed
+     
+    std::cout << std::setprecision(5) << std::fixed << " people " << std::setw(3)
+      << people << " chance "
+      << std::setw(9)
       << 100 * (double(successfulTrials) / double(TRIALS)) << " %"
       << std::endl;
   }
