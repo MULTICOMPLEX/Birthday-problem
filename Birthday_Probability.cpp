@@ -35,7 +35,7 @@ void Birthday_Probability(
 	int successfulTrials;
 	bool sharedBirthday;
 
-	mxws rng;
+	mxws <uint32_t>rng;
 
 	auto begin = std::chrono::steady_clock::now();
 
