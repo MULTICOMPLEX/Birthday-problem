@@ -1,15 +1,15 @@
-import random;
-//#include "mxws.hpp"
+
 import <chrono>;
 import <iostream>;
- 
+import random;
+
 void Birthday_Probability(
 	int Ndays = 365,
 	int TRIALS = 1500000,
 	int Npeople_with_same_birthday = 2,
 	int N_people = 100
 );
-
+  
 int main() 
 {
 	int Ndays = 365;
@@ -21,7 +21,7 @@ int main()
 
 	return 0;
 }
-
+ 
 void Birthday_Probability(
 	int TRIALS,
 	int Ndays,

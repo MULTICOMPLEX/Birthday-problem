@@ -197,7 +197,9 @@ public:
 		return estimate;
 	}
 
-	double erf_inv(double x) {
+	template <typename T>
+		requires std::floating_point<T>
+	T erf_inv(const T& x) {
 
 		if (x < -1 || x > 1) {
 			return NAN;
@@ -329,3 +331,4 @@ public:
 
 
 export mxws <uint32_t>rng;
+export mxws <uint64_t>rng64;
