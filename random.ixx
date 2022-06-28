@@ -1,3 +1,5 @@
+export module random;
+
 import <random>;
 import <numbers>;
 import <iostream>;
@@ -289,6 +291,7 @@ public:
 		return copysignl(num / den, x);
 	}
 
+
 	template<typename T>
 	T inline probit(const T& p)
 	{
@@ -323,3 +326,6 @@ public:
 		return std::make_tuple(rn_range, cycle_size);
 	}
 };
+
+
+export mxws <uint32_t>rng;

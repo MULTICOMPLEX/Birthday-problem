@@ -18,5 +18,8 @@
     <ClCompile Include="Birthday_Probability.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="random.ixx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

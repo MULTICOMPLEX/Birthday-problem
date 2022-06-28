@@ -1,9 +1,8 @@
-#include "mxws.hpp"
-#include <iostream>
-#include <chrono>
-#include <numbers>
-#include <array>
-
+import random;
+//#include "mxws.hpp"
+import <chrono>;
+import <iostream>;
+ 
 void Birthday_Probability(
 	int Ndays = 365,
 	int TRIALS = 1500000,
@@ -11,7 +10,7 @@ void Birthday_Probability(
 	int N_people = 100
 );
 
-int main()
+int main() 
 {
 	int Ndays = 365;
 	int TRIALS = 1500000;
@@ -30,12 +29,14 @@ void Birthday_Probability(
 	int N_people
 ) {
 
+	//mxws <uint32_t>rng;
+
+	std::cout << rng.erf_inv(.5);
+	
 	std::vector<short int> birthdays(Ndays);
 
 	int successfulTrials;
 	bool sharedBirthday;
-
-	mxws <uint32_t>rng;
 
 	auto begin = std::chrono::steady_clock::now();
 
