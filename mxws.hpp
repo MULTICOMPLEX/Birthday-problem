@@ -1,6 +1,8 @@
-import <random>;
-import <numbers>;
-import <iostream>;
+#include <random>
+#include <numbers>
+#include <iostream>
+#include <iostream>
+#include "ziggurat.hpp"
 
 template <typename RN>
 	requires
@@ -25,7 +27,18 @@ public:
 		x1 = x2 = 1;
 	}
 
-	mxws(const std::seed_seq& seq)
+	void seed(uint64_t x)
+	{
+		w = x;
+		x = 1;
+		w1 = w;
+		w2 = w1 + 1;
+		x1 = x2 = 1;
+	}
+
+	template <typename T>
+		requires	std::same_as<T, std::seed_seq>
+	mxws(const T& seq)
 	{
 		if (seq.size() == 2)
 		{
@@ -47,7 +60,9 @@ public:
 		init();
 	}
 
-	mxws(const uint64_t& seed)
+	template <typename T>
+		requires	std::same_as<T, uint64_t>
+	mxws(const T& seed)
 	{
 		init();
 	}
@@ -61,14 +76,16 @@ public:
 		x1 = x2 = 1;
 	}
 
-	void init(const uint64_t& seed)
+	template <typename T>
+		requires	std::same_as<T, uint64_t>
+	void init(const T& seed)
 	{
 		w = seed;
 		x = 1;
 	}
 
 	virtual ~mxws() = default;
-	
+
 	static constexpr RN min() { return std::numeric_limits<RN>::min(); }
 	static constexpr RN max() { return std::numeric_limits<RN>::max(); }
 
@@ -167,35 +184,69 @@ public:
 		// return a normally distributed random value
 		T v1 = (*this)(1.0);
 		T v2 = (*this)(1.0);
-		return std::cos(2 * std::numbers::pi * v2) * std::sqrt(-2 * std::log(v1)) * sigma + mean;
+		return std::cos(2 * std::numbers::pi * v2) * 
+			std::sqrt(-2 * std::log(v1)) * sigma + mean;
 	}
+
+	cxx::ziggurat_normal_distribution<double> normalRandomZ;
 
 	template <typename T, typename L>
 		requires std::floating_point<T>&&
 	std::integral<L>
-		T inline error_function(const T& x, const L& iterations)
+		T error_function_mc1(const T& x, const L& iterations)
 	{
 		const auto f = [](const auto& t) {return exp(-pow(t, 2)); };
 
 		T	totalSum = 0;
 
-		double lowBound = 0, upBound = x;
+		T lowBound = 0, upBound = x;
 
 		for (auto i = 0; i < iterations; i++)
 			totalSum += f((*this)(x));
 
-		double estimate = (upBound - lowBound) * totalSum / iterations;
+		T estimate = (upBound - lowBound) * totalSum / iterations;
 
 		estimate *= 2 / sqrt(std::numbers::pi);
 
-		std::cout << "error function(" << x << ") = " << estimate << std::endl;
-		std::cout << " std::function(" << x << ") = "
-			<< std::erf(x) << std::endl;
+		//std::cout << "error function(" << x << ") = " << estimate << std::endl;
+		//std::cout << " std::function(" << x << ") = " << std::erf(x) << std::endl;
 
 		return estimate;
 	}
 
-	double erf_inv(double x) {
+	template <typename T, typename L>
+		requires std::floating_point<T>&&
+	std::integral<L>
+		T error_function_mc2(const T& x, const L& iterations)
+	{
+		T erf;
+		L erft = 0;
+
+		mxws <uint32_t>RNG;
+
+		cxx::ziggurat_normal_distribution<T> normal(0, 1. / sqrt(2));
+
+		auto k = abs(x);
+
+		for (L i = 0; i < iterations; i++) {
+
+			erf = normal(RNG);
+
+			if ((erf >= -k) && (erf <= k))
+				erft++;
+		}
+
+		//std::cout << "error_function_mc(" << x << ") = " << erft / T(iterations) << std::endl;
+		//std::cout << "    std::function(" << x << ") = " << std::erf(x) << std::endl;
+
+		auto ret = erft / T(iterations);
+		if (x < 0)ret = -ret;
+		return ret;
+	}
+
+	template <typename T>
+		requires std::floating_point<T>
+	T erf_inv(T x) {
 
 		if (x < -1 || x > 1) {
 			return NAN;
@@ -290,6 +341,30 @@ public:
 	}
 
 	template<typename T>
+		requires std::floating_point<T>
+	T normalCDF(const T x)
+	{
+		return std::erfc(-x / std::sqrt(2)) / 2.;
+	}
+
+	template <typename T, typename L>
+		requires std::floating_point<T>&&
+	std::integral<L>
+		T normalCDF_mc(const T x, const L n)
+	{
+		return erfc_mc(-x / std::sqrt(2), n) / 2;
+	}
+
+	template <typename T, typename L>
+		requires std::floating_point<T>&&
+	std::integral<L>
+		T erfc_mc(const T x, const L n)
+	{
+		return 1. - error_function_mc2(x, n);
+	}
+
+	template<typename T>
+		requires std::floating_point<T>
 	T inline probit(const T& p)
 	{
 		T root_2 = sqrt(2);
@@ -301,11 +376,11 @@ public:
 	std::same_as<R, double>&&
 		std::integral<I>&&
 		std::same_as<L, std::uint64_t>
-		std::tuple<R, I> inline Probability_Wave(const I& cycle_SIZE,
-			std::vector<I>& cycle, const I& N_cycles, const L& TRIALS) {
+		std::tuple<R, I> Probability_Wave(const I& board_SIZE,
+			auto& cycle, const I& N_cycles, const L& TRIALS) {
 
-		const I cycle_size = I(round(log(cycle_SIZE * 6) * pow(tan(36 / 5.), 2)));
-		const I rn_range = I(floor(cycle_SIZE / sqrt(log2(cycle_SIZE))));
+		const I board_size = I(round(log(board_SIZE * 6) * pow(tan(36 / 5.), 2)));
+		const I rn_range = I(floor(board_SIZE / sqrt(log2(board_SIZE))));
 
 		//const I cycle_size = cycle_SIZE;
 		//const I rn_range = I(round(sqrt(cycle_size) + log(cycle_size / 4)));
@@ -314,12 +389,95 @@ public:
 
 		for (L i = 0; i < TRIALS; i++, random_walk = 0)
 		{
-			for (I j = 0; j < cycle_size; j++)
+			for (I j = 0; j < board_size; j++)
 				random_walk += (*this)();
 
-			cycle[to_int(random_walk * rn_range) % cycle_SIZE]++;
+			cycle[to_int(random_walk * rn_range) % board_SIZE]++;
 		}
 
-		return std::make_tuple(rn_range, cycle_size);
+		return std::make_tuple(rn_range, board_size);
+	}
+
+	template <typename T, typename L>
+		requires std::floating_point<T>&&
+	std::same_as<L, std::uint64_t>
+		T sqrt_mc(T z = 2, L throws = 10000000000)
+	{
+		L tel = 0, i = 0;
+		T r;
+
+		if (z < 1) {
+			while (i < throws)
+			{
+				r = (*this)(1.0 / z);
+				r *= r;
+				if (r < z)tel++;
+				i++;
+			}
+			return (1.0 / z) * T(tel) / throws;
+		}
+
+		else {
+			while (i < throws)
+			{
+				r = (*this)(z);
+				r *= r;
+				if (r < z)tel++;
+				i++;
+			}
+			return z * T(tel) / throws;
+		}
+	}
+
+	template <typename T, typename L>
+		requires std::floating_point<T>&&
+	std::same_as<L, std::uint64_t>
+		T exp_mc(T x = 0.9, L n_samples = 10000000000)
+	{
+		if (x == 0) return 1;
+
+		T h = 0;
+		T xi = 1;
+		L tot = 0;
+
+		if (x < -1 || x > 1)
+		{
+			x = std::modf(x, &xi);
+			//The integer part is stored in the object pointed by intpart, 
+			//and the fractional part is returned by the function.
+			xi = std::pow(std::numbers::e, xi);
+		}
+
+		if (x == 0)return xi;
+
+		if (x > 0)
+		{
+			for (auto i = 0; i < n_samples; i++)
+			{
+				while (h < 1)
+				{
+					h += (*this)(1.0 / x);
+					tot++;
+				}
+				h = 0;
+			}
+			return T(tot) / n_samples * xi;
+		}
+
+		else {
+
+			x = std::abs(x);
+			for (auto i = 0; i < n_samples; i++)
+			{
+				while (h < x)
+				{
+					h += (*this)(1.0);
+					tot++;
+				}
+				h = 0;
+			}
+
+			return n_samples / T(tot) * xi;
+		}
 	}
 };

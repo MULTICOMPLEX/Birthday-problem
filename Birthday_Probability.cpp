@@ -11,7 +11,7 @@ void Birthday_Probability(
 );
   
 int main() 
-{
+{  
 	int Ndays = 365;
 	int TRIALS = 1500000;
 	int Npeople_with_same_birthday = 2;
@@ -28,16 +28,12 @@ void Birthday_Probability(
 	int Npeople_with_same_birthday,
 	int N_people
 ) {
-
-	//mxws <uint32_t>rng;
-
-	std::cout << rng.erf_inv(.5);
 	
 	std::vector<short int> birthdays(Ndays);
 
 	int successfulTrials;
 	bool sharedBirthday;
-
+	 
 	auto begin = std::chrono::steady_clock::now();
 
 	std::cout <<
