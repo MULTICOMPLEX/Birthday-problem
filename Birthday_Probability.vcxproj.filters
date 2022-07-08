@@ -21,5 +21,8 @@
     <ClCompile Include="random.ixx">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="ziggurat.ixx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

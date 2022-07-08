@@ -1,8 +1,9 @@
-#include <random>
-#include <numbers>
-#include <iostream>
-#include <iostream>
-#include "ziggurat.hpp"
+export module mxws;
+
+import <random>;
+import <numbers>;
+import <iostream>;
+import ziggurat;
 
 template <typename RN>
 	requires
