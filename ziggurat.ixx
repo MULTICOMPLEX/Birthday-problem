@@ -4,8 +4,15 @@ export module ziggurat;
 import <iostream>;
 import <random>;
 
-export
-namespace cxx
+#if defined(__GNUC__)
+# define ZIGGURAT_LIKELY(x) __builtin_expect((x), 1)
+# define ZIGGURAT_NOINLINE __attribute__((noinline))
+#else
+# define ZIGGURAT_LIKELY(x) (x)
+# define ZIGGURAT_NOINLINE
+#endif
+
+export namespace cxx
 {
 	namespace ziggurat_detail
 	{
@@ -269,6 +276,7 @@ namespace cxx
 		}
 
 		template<typename URNG>
+		ZIGGURAT_NOINLINE
 			T sample_from_tail(URNG& random) const
 		{
 			T const tail_edge = ziggurat::edges[1];
@@ -285,6 +293,7 @@ namespace cxx
 		}
 
 		template<typename URNG>
+		ZIGGURAT_NOINLINE
 			bool check_accept(URNG& random, T lower_edge, T upper_edge, T x) const
 		{
 			// Rejection sampling from the interval [upper_edge, lower_edge].
@@ -382,3 +391,5 @@ namespace cxx
 	};
 }
 
+#undef ZIGGURAT_LIKELY
+#undef ZIGGURAT_NOINLINE

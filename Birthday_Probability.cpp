@@ -2,22 +2,54 @@
 import <chrono>;
 import <iostream>;
 import random;
+#include "matplotlib.hpp"
+
+plot_matplotlib plot;
 
 void Birthday_Probability(
-	int Ndays = 365,
-	int TRIALS = 1500000,
-	int Npeople_with_same_birthday = 2,
-	int N_people = 100
+	int Ndays,
+	int TRIALS,
+	int Npeople_with_same_birthday,
+	int N_people,
+	std::vector<double>& X,
+	std::vector<double>& Y
 );
-  
+
+std::string utf8_encode(std::u8string const& s)
+{
+	return (const char*)(s.c_str());
+}
+
+std::ostream& operator <<
+(
+	std::ostream& o,
+	std::u8string& s
+	)
+{
+	o << (const char*)(s.c_str());
+	return o;
+}
+
 int main() 
 {  
-	int Ndays = 365;
+	std::setlocale(LC_ALL, "en_US.utf8");
+
+	int Ndays = 365; 
 	int TRIALS = 1500000;
 	int Npeople_with_same_birthday = 2;
 	int N_people = 100;
 
-	Birthday_Probability(TRIALS, Ndays, Npeople_with_same_birthday, N_people);
+	std::vector<double> X = { 0 }, Y = {0};
+	
+	Birthday_Probability(TRIALS, Ndays, Npeople_with_same_birthday, N_people, X, Y);
+
+	plot.plot_somedata(X, Y, "","", "blue");
+	plot.set_xlabel("Number of people");
+	plot.set_ylabel("Probability of a pair");
+	plot.grid_on();
+	std::u8string title = u8"Birthday problem";
+	plot.set_title(utf8_encode(title));
+	plot.show();
 
 	return 0;
 }
@@ -26,7 +58,9 @@ void Birthday_Probability(
 	int TRIALS,
 	int Ndays,
 	int Npeople_with_same_birthday,
-	int N_people
+	int N_people,
+	std::vector<double>& X,
+	std::vector<double>& Y
 ) {
 	
 	std::vector<short int> birthdays(Ndays);
@@ -65,13 +99,17 @@ void Birthday_Probability(
 			if (sharedBirthday) ++successfulTrials;
 		}
 
+		double y = 100 * (double(successfulTrials) / TRIALS);
+		X.push_back(people);
+		Y.push_back(y);
+
 		std::cout << std::setprecision(5) << std::fixed << " people " << std::setw(3)
 			<< people << " chance "
 			<< std::setw(9)
-			<< 100 * (double(successfulTrials) / TRIALS) << " %"
+			<< y << " %"
 			<< std::endl;
 	}
 	auto end = std::chrono::steady_clock::now();
 	std::cout << "\nTime difference = " <<
 		std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
-}
+} 
