@@ -6,13 +6,14 @@ import random;
 
 plot_matplotlib plot;
 
+template <typename T>
 void Birthday_Probability(
-	int Ndays,
-	int TRIALS,
-	int Npeople_with_same_birthday,
-	int N_people,
-	std::vector<double>& X,
-	std::vector<double>& Y
+	int Ndays = 365,
+	int TRIALS = 1500000,
+	int Npeople_with_same_birthday = 2,
+	int N_people = 100,
+	std::vector<T>& X = {},
+	std::vector<T>& Y = {}
 );
 
 std::string utf8_encode(std::u8string const& s)
@@ -43,7 +44,7 @@ int main()
 	
 	Birthday_Probability(TRIALS, Ndays, Npeople_with_same_birthday, N_people, X, Y);
 
-	plot.plot_somedata(X, Y, "","", "blue");
+	plot.plot_somedata(X, Y, "", std::to_string(Npeople_with_same_birthday) + " people", "blue");
 	plot.set_xlabel("Number of people");
 	plot.set_ylabel("Probability of a pair");
 	plot.grid_on();
@@ -54,13 +55,15 @@ int main()
 	return 0;
 }
  
+
+template <typename T>
 void Birthday_Probability(
 	int TRIALS,
 	int Ndays,
 	int Npeople_with_same_birthday,
 	int N_people,
-	std::vector<double>& X,
-	std::vector<double>& Y
+	std::vector<T>& X,
+	std::vector<T>& Y
 ) {
 	
 	std::vector<short int> birthdays(Ndays);
