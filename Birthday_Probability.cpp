@@ -1,6 +1,7 @@
 
 import <chrono>;
 import <iostream>;
+import <algorithm>;
 import random;
 #include "matplotlib.hpp"
 
@@ -9,7 +10,7 @@ plot_matplotlib plot;
 template <typename T>
 void Birthday_Probability(
 	int Ndays = 365,
-	int TRIALS = 1500000,
+	int TRIALS = 150000,
 	int Npeople_with_same_birthday = 2,
 	int N_people = 100,
 	std::vector<T>& X = {},
@@ -37,8 +38,8 @@ int main()
 
 	int Ndays = 365; 
 	int TRIALS = 1500000;
-	int Npeople_with_same_birthday = 2;
-	int N_people = 100;
+	int Npeople_with_same_birthday = 3;
+	int N_people = 200;
 
 	std::vector<double> X = { 0 }, Y = {0};
 	
@@ -46,7 +47,7 @@ int main()
 
 	plot.plot_somedata(X, Y, "", std::to_string(Npeople_with_same_birthday) + " people", "blue");
 	plot.set_xlabel("Number of people");
-	plot.set_ylabel("Probability of a pair");
+	plot.set_ylabel("Percentage Change");
 	plot.grid_on();
 	std::u8string title = u8"Birthday problem";
 	plot.set_title(utf8_encode(title));
@@ -88,6 +89,7 @@ void Birthday_Probability(
 		successfulTrials = 0;
 		for (auto i = 0; i < TRIALS; ++i) {
 
+		
 			std::ranges::fill(birthdays, 0);
 			sharedBirthday = false;
 
