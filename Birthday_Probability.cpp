@@ -38,8 +38,8 @@ int main()
 
 	int Ndays = 365; 
 	int TRIALS = 1500000;
-	int Npeople_with_same_birthday = 3;
-	int N_people = 200;
+	int Npeople_with_same_birthday = 2;
+	int N_people = 100;
 
 	std::vector<double> X = { 0 }, Y = {0};
 	
@@ -92,7 +92,7 @@ void Birthday_Probability(
 		
 			std::ranges::fill(birthdays, 0);
 			sharedBirthday = false;
-
+			
 			for (auto j = 0; j < people; ++j) {
 				// if the given birthday is shared (has more than one person)
 				// then we have a shared birthday, stop checking

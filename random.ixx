@@ -200,7 +200,7 @@ public:
 		const auto f = [](const auto& t) {return exp(-pow(t, 2)); };
 
 		T	totalSum = 0;
-
+		 
 		T lowBound = 0, upBound = x;
 
 		for (auto i = 0; i < iterations; i++)
@@ -259,7 +259,7 @@ public:
 		else if (x == -1.0) {
 			return -INFINITY;
 		}
-
+		
 		const long double LN2 = 6.931471805599453094172321214581e-1L;
 
 		const long double A0 = 1.1975323115670912564578e0L;
